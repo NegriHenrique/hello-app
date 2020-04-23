@@ -1,24 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Parser from "html-react-parser";
+import axios from "axios";
+import "./App.css";
 
 function App() {
+  const [hello, setHello] = useState("&aacute");
+
+  useEffect(() => {
+    async function getData() {
+      const country = await axios.get(
+        "http://ip-api.com/json/?fields=countryCode"
+      );
+
+      if (country.data) {
+        const response = await axios.get(
+          `https://fourtonfish.com/hellosalut/?cc=${country.data.countryCode}`
+        );
+
+        setHello(response.data.hello);
+      }
+    }
+
+    getData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>{Parser(hello)}</h1>
     </div>
   );
 }
